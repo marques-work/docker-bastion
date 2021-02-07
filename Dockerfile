@@ -1,6 +1,6 @@
-FROM alpine:3.11.6
+FROM debian:buster-slim
 
-LABEL maintainer="Mark <mark.binlab@gmail.com>"
+LABEL maintainer="Marques Lee <marques.lee@thoughtworks.com>"
 
 ARG HOME=/var/lib/bastion
 
@@ -14,12 +14,13 @@ ENV HOST_KEYS_PATH="${HOST_KEYS_PATH_PREFIX}/etc/ssh"
 
 COPY bastion /usr/sbin/bastion
 
-RUN addgroup -S -g ${GID} ${GROUP} \
-    && adduser -D -h ${HOME} -s /bin/ash -g "${USER} service" \
-           -u ${UID} -G ${GROUP} ${USER} \
+RUN addgroup --system --gid ${GID} ${GROUP} \
+    && adduser --disabled-password --home ${HOME} --shell /bin/sh \
+           --system --uid ${UID} --ingroup ${GROUP} ${USER} \
     && sed -i "s/${USER}:!/${USER}:*/g" /etc/shadow \
     && set -x \
-    && apk add --no-cache openssh-server \
+    && apt-get update \
+    && apt-get install -y openssh-server \
     && echo "Welcome to Bastion!" > /etc/motd \
     && chmod +x /usr/sbin/bastion \
     && mkdir -p ${HOST_KEYS_PATH} \
