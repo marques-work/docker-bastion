@@ -23,6 +23,8 @@ RUN addgroup --system --gid ${GID} ${GROUP} \
     && apt-get install -y openssh-server \
     && echo "Welcome to Bastion!" > /etc/motd \
     && chmod +x /usr/sbin/bastion \
+    && mkdir -p /var/run/sshd \
+    && chmod 0755 /var/run/sshd \
     && mkdir -p ${HOST_KEYS_PATH} \
     && mkdir /etc/ssh/auth_principals \
     && echo "bastion" > /etc/ssh/auth_principals/bastion
